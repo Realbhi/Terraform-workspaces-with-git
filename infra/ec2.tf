@@ -3,7 +3,7 @@
 #3. Ec2 instance
 
 resource aws_key_pair deployer {
-     key_name = "Deployer-key"
+     key_name = "${var.env}-Deployer-key"
      public_key = file("prvtpubkey.pub")
 }
 
@@ -12,7 +12,7 @@ resource aws_default_vpc default-vpc{
 }
 
 resource aws_security_group SgforTF {
-   name = "sgfortraffic"
+   name = "${var.env}-sgfortraffic"
    vpc_id = aws_default_vpc.default-vpc.id
    description = "This security group is to control ingress and egress traffic"  
 
@@ -22,13 +22,7 @@ resource aws_security_group SgforTF {
      cidr_blocks = ["0.0.0.0/0"]
      protocol = "tcp"
    }
-   
-   ingress{
-     from_port = 80
-     to_port = 80
-     cidr_blocks = ["0.0.0.0/0"]
-     protocol = "tcp"
-   }
+  
  
    ingress{
      from_port = 80
@@ -49,9 +43,9 @@ resource aws_instance "ec2-instance" {
    ami = var.ami
    for_each = tomap({
      
-         "instance-1-for-tf" = "t3.micro"
-         "instance-2-for-tf" = "t3.small"
-         "instance-3-for-tf" = "t3.small"  
+         "instance-1-${var.env}-for-tf" = "t3.micro"
+         "instance-2-${var.env}-for-tf" = "t3.small"
+         "instance-3-${var.env}-for-tf" = "t3.small"  
  
    })
 
@@ -66,6 +60,7 @@ resource aws_instance "ec2-instance" {
 
   tags = {
      Name = each.key
+     Env = var.env
   } 
 
 }
@@ -75,20 +70,11 @@ resource aws_instance "ec2-instance-imported" {
    
     ami = "ami-019715e0d74f695be" 
     instance_type = "t3.micro"
-    key_name = "templete-key" 
-
-}
-
-resource aws_instance "ec2-instance-imported2" {
-
-    ami = "ami-019715e0d74f695be" 
-    instance_type = "t3.micro"
-    key_name = "templete-key"
-
+    key_name = aws_key_pair.deployer.key_name 
     tags = {
-       Name = "see-import-instance"
-    }
-   
+     Name = "${var.env}-instance-imported"
+     Env = var.env
+  }
 }
 
 
