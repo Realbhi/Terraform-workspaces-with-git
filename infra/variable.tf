@@ -12,6 +12,6 @@ variable ami {
 }
 
 variable "env" {
-   default = "Prod"
+   default = "dev"
 }
 
