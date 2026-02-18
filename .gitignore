@@ -30,3 +30,14 @@ override.tf.json
 # Terraform plan output
 *.tfplan
 
+# Ignore AWS CLI / plugins folder accidentally inside infra
+infra/aws/
+
+# Ignore local keys
+infra/prvtpubkey
+infra/prvtpubkey.pub
+
+# Ignore random text files
+infra/x.txt
+infra/y.txt
+
